@@ -6,8 +6,6 @@ public class Tecnico extends Thread {
         this.sincronizacion = sincronizacion;
     }
 
-
-    
     @Override
     public void run() {
         while (!isInterrupted()) {
