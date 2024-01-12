@@ -1,4 +1,4 @@
-package edu.mondragon.os.monitors.aiqua;
+package edu.mondragon.os.monitors.barbershop;
 public class Operario extends Thread {
     private Sincronizacion sincronizacion;
 
