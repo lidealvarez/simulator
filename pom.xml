@@ -55,4 +55,16 @@
       </plugins>
     </pluginManagement>
   </build>
+
+  <dependencies>
+    <!-- Ejemplo de dependencia para JUnit para pruebas unitarias -->
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+        <scope>test</scope>
+    </dependency>
+    <!-- Agrega otras dependencias según tus necesidades -->
+</dependencies>
+
 </project>
