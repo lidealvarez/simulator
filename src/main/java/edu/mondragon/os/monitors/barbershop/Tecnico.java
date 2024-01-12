@@ -14,6 +14,11 @@ public class Tecnico extends Thread {
     }
 
 
+<<<<<<< HEAD
+=======
+    
+
+>>>>>>> bac11884e96a91e18d68387e8c73cf478b1aac90
     public synchronized void repararValvulasConAnomalia() {
         for (int i = 0; i < sincronizacion.getNumValvulas(); i++) {
             try {
