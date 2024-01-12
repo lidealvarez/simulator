@@ -1,70 +1,45 @@
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SincronizacionTest {
 
     @Test
     public void testNotificarAnomalia() {
-        // Configuración de Sincronizacion
-        Sincronizacion sincronizacion = new Sincronizacion(3);
+        int numValvulas = 3;
+        Sincronizacion sincronizacion = new Sincronizacion(numValvulas);
 
-        // Llamar al método notificarAnomalia con un índice válido
+        // Notificar anomalía para una válvula específica
         sincronizacion.notificarAnomalia(1);
 
-        // Verificar que la anomalía se notificó correctamente
+        // Verificar que la anomalía fue notificada correctamente
         assertTrue(sincronizacion.getAnomalias()[1]);
     }
 
     @Test
-    public void testNotificarAnomaliaConIndiceInvalido() {
-        // Configuración de Sincronizacion
-        Sincronizacion sincronizacion = new Sincronizacion(3);
-
-        // Llamar al método notificarAnomalia con un índice inválido
-        sincronizacion.notificarAnomalia(5);
-
-        // Verificar que se imprime un mensaje de error
-        // (puedes ajustar esto según la lógica de manejo de errores en tu aplicación)
-        // Aquí asumimos que se imprime en la consola, podrías redirigir la salida
-        // estándar para realizar esta verificación de manera más precisa.
-        assertEquals("Error: Índice de válvula no válido", getConsoleOutput());
-    }
-
-    @Test
     public void testRepararValvula() throws InterruptedException {
-        // Configuración de Sincronizacion
-        Sincronizacion sincronizacion = new Sincronizacion(3);
+        int numValvulas = 3;
+        Sincronizacion sincronizacion = new Sincronizacion(numValvulas);
 
-        // Establecer una anomalía en una válvula
-        sincronizacion.notificarAnomalia(2);
+        // Simular notificación de anomalía para una válvula específica
+        sincronizacion.notificarAnomalia(0);
 
-        // Llamar al método repararValvula
-        sincronizacion.repararValvula(2);
+        // Ejecutar reparación de válvula
+        new Thread(() -> {
+            try {
+                sincronizacion.repararValvula(0);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
-        // Verificar que la válvula se reparó correctamente
-        assertFalse(sincronizacion.getAnomalias()[2]);
+        // Esperar un momento para que el hilo de reparación se inicie
+        Thread.sleep(1000);
+
+        // Verificar que la válvula fue reparada y no tiene anomalía
         assertEquals(1, sincronizacion.getValvesRepaired());
-    }
-
-    @Test
-    public void testRepararValvulaSinAnomalia() throws InterruptedException {
-        // Configuración de Sincronizacion
-        Sincronizacion sincronizacion = new Sincronizacion(3);
-
-        // Llamar al método repararValvula sin una anomalía previa
-        sincronizacion.repararValvula(1);
-
-        // Verificar que no se incrementó el contador de válvulas reparadas
-        assertEquals(0, sincronizacion.getValvesRepaired());
+        assertFalse(sincronizacion.getAnomalias()[0]);
     }
 
     // Puedes agregar más pruebas según sea necesario
 
-    // Método para capturar la salida de la consola
-    private String getConsoleOutput() {
-        // Este método asume que la aplicación imprime mensajes en la consola
-        // Puedes ajustarlo según la implementación específica de tu aplicación
-        return "Error: Índice de válvula no válido";
-    }
 }

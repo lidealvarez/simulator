@@ -1,66 +1,66 @@
 import org.junit.jupiter.api.Test;
 
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AppTest {
 
     @Test
     public void testStartThreads() {
-        // Configuración del mock para Sincronizacion
-        Sincronizacion mockSincronizacion = mock(Sincronizacion.class);
+        // Configuración de Sincronizacion simulada
+        SincronizacionFake sincronizacionFake = new SincronizacionFake(3);
 
-        // Configuración del mock para Valvula
-        Valvula[] mockValvulas = new Valvula[] { mock(Valvula.class), mock(Valvula.class), mock(Valvula.class) };
+        // Configuración de Valvulas simuladas
+        ValvulaFake[] valvulas = new ValvulaFake[] { new ValvulaFake(sincronizacionFake), new ValvulaFake(sincronizacionFake), new ValvulaFake(sincronizacionFake) };
 
-        // Configuración del mock para Operario
-        Operario mockOperario = mock(Operario.class);
+        // Configuración de Operario simulado
+        OperarioFake operarioFake = new OperarioFake(sincronizacionFake);
 
-        // Configuración del mock para Tecnico
-        Tecnico[] mockTecnicos = new Tecnico[] { mock(Tecnico.class), mock(Tecnico.class) };
+        // Configuración de Tecnicos simulados
+        TecnicoFake[] tecnicos = new TecnicoFake[] { new TecnicoFake(sincronizacionFake), new TecnicoFake(sincronizacionFake) };
 
         // Crear instancia de App
-        App app = new App(mockSincronizacion, mockValvulas, mockOperario, mockTecnicos);
+        App app = new App(sincronizacionFake, valvulas, operarioFake, tecnicos);
 
         // Llamar al método startThreads
         app.startThreads();
 
         // Verificar que start() se llamó en cada Valvula, Operario y Tecnico
-        for (Valvula mockValvula : mockValvulas) {
-            verify(mockValvula, times(1)).start();
+        for (ValvulaFake valvula : valvulas) {
+            assertTrue(valvula.isStartCalled());
         }
-        verify(mockOperario, times(1)).start();
-        for (Tecnico mockTecnico : mockTecnicos) {
-            verify(mockTecnico, times(1)).start();
+        assertTrue(operarioFake.isStartCalled());
+        for (TecnicoFake tecnico : tecnicos) {
+            assertTrue(tecnico.isStartCalled());
         }
     }
 
     @Test
     public void testInterruptThreads() {
-        // Configuración del mock para Sincronizacion
-        Sincronizacion mockSincronizacion = mock(Sincronizacion.class);
+        // Configuración de Sincronizacion simulada
+        SincronizacionFake sincronizacionFake = new SincronizacionFake(3);
 
-        // Configuración del mock para Valvula
-        Valvula[] mockValvulas = new Valvula[] { mock(Valvula.class), mock(Valvula.class), mock(Valvula.class) };
+        // Configuración de Valvulas simuladas
+        ValvulaFake[] valvulas = new ValvulaFake[] { new ValvulaFake(sincronizacionFake), new ValvulaFake(sincronizacionFake), new ValvulaFake(sincronizacionFake) };
 
-        // Configuración del mock para Operario
-        Operario mockOperario = mock(Operario.class);
+        // Configuración de Operario simulado
+        OperarioFake operarioFake = new OperarioFake(sincronizacionFake);
 
-        // Configuración del mock para Tecnico
-        Tecnico[] mockTecnicos = new Tecnico[] { mock(Tecnico.class), mock(Tecnico.class) };
+        // Configuración de Tecnicos simulados
+        TecnicoFake[] tecnicos = new TecnicoFake[] { new TecnicoFake(sincronizacionFake), new TecnicoFake(sincronizacionFake) };
 
         // Crear instancia de App
-        App app = new App(mockSincronizacion, mockValvulas, mockOperario, mockTecnicos);
+        App app = new App(sincronizacionFake, valvulas, operarioFake, tecnicos);
 
         // Llamar al método interruptThreads
         app.interruptThreads();
 
         // Verificar que interrupt() se llamó en cada Valvula, Operario y Tecnico
-        for (Valvula mockValvula : mockValvulas) {
-            verify(mockValvula, times(1)).interrupt();
+        for (ValvulaFake valvula : valvulas) {
+            assertTrue(valvula.isInterruptCalled());
         }
-        verify(mockOperario, times(1)).interrupt();
-        for (Tecnico mockTecnico : mockTecnicos) {
-            verify(mockTecnico, times(1)).interrupt();
+        assertTrue(operarioFake.isInterruptCalled());
+        for (TecnicoFake tecnico : tecnicos) {
+            assertTrue(tecnico.isInterruptCalled());
         }
     }
 

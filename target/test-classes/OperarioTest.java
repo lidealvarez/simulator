@@ -1,29 +1,28 @@
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
 
 public class OperarioTest {
 
     @Test
     public void testRevisarValvulasNotificaAnomalia() {
-        // Configuración del mock de Sincronizacion
-        Sincronizacion mockSincronizacion = mock(Sincronizacion.class);
-        Operario operario = new Operario(mockSincronizacion);
+        // Configuración de Sincronizacion con una implementación concreta
+        Sincronizacion sincronizacion = new Sincronizacion(3);
+        Operario operario = new Operario(sincronizacion);
 
         // Ejecución del método revisarValvulas
         operario.revisarValvulas();
 
         // Verificación de que notificarAnomalia se llamó para cada válvula
         for (int i = 0; i < operario.getSincronizacion().getNumValvulas(); i++) {
-            verify(mockSincronizacion, times(1)).notificarAnomalia(i);
+            assertTrue(sincronizacion.anomalias[i]);
         }
     }
 
     @Test
     public void testOperarioInterrupted() {
-        // Configuración del mock de Sincronizacion
-        Sincronizacion mockSincronizacion = mock(Sincronizacion.class);
-        Operario operario = new Operario(mockSincronizacion);
+        // Configuración de Sincronizacion con una implementación concreta
+        Sincronizacion sincronizacion = new Sincronizacion(3);
+        Operario operario = new Operario(sincronizacion);
 
         // Interrumpir el hilo del operario
         operario.interrupt();
@@ -36,5 +35,4 @@ public class OperarioTest {
     }
 
     // Agrega más pruebas según sea necesario
-
 }
