@@ -2,18 +2,18 @@ import edu.mondragon.os.monitors.barbershop.Sincronizacion;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+
+import static org.junit.Assert.assertEquals;
 
 public class OperarioTest {
 
-    private Sincronizacion mockSincronizacion;
+    private Sincronizacion sincronizacion;
     private Operario operario;
 
     @Before
     public void setUp() {
-        mockSincronizacion = mock(Sincronizacion.class);
-        operario = new Operario(mockSincronizacion);
+        sincronizacion = new Sincronizacion(); // Puedes crear una instancia real o una clase que implemente la interfaz necesaria
+        operario = new Operario(sincronizacion);
     }
 
     @After
@@ -24,14 +24,13 @@ public class OperarioTest {
     @Test
     public void testRevisarValvulas() {
         // Configuración del escenario
-        when(mockSincronizacion.getNumValvulas()).thenReturn(3);
+        int numValvulas = 3;
+        sincronizacion.setNumValvulas(numValvulas);
 
         // Ejecución de la prueba
         operario.revisarValvulas();
 
         // Verificación de resultados
-        for (int i = 0; i < 3; i++) {
-            verify(mockSincronizacion).notificarAnomalia(i);
-        }
+        assertEquals(numValvulas, sincronizacion.getNotificacionesRecibidas());
     }
 }
