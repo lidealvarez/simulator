@@ -13,7 +13,7 @@ public class Tecnico extends Thread {
         }
     }
 
-    
+
     public synchronized void repararValvulasConAnomalia() {
         for (int i = 0; i < sincronizacion.getNumValvulas(); i++) {
             try {
@@ -23,4 +23,5 @@ public class Tecnico extends Thread {
             }
         }
     }
+    
 }
