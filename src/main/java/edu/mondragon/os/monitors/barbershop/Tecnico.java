@@ -22,6 +22,7 @@ public class Tecnico extends Thread {
                 Thread.currentThread().interrupt();
             }
         }
+        
     }
-    
+
 }
