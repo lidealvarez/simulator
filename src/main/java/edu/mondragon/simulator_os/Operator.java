@@ -1,7 +1,5 @@
 package edu.mondragon.simulator_os;
 
-import java.util.List;
-
 public class Operator extends Thread {
     private Management management;
 

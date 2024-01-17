@@ -19,7 +19,7 @@ public class Valve extends Thread {
         try {
             while (true) {
                 management.write(this.getName(), valveId, rand.nextInt(15));
-                 Thread.sleep(rand.nextInt(1000));
+                Thread.sleep(rand.nextInt(1000));
             }
         } catch (InterruptedException e) {
             e.printStackTrace();

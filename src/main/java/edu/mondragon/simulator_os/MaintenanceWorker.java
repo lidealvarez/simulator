@@ -10,13 +10,13 @@ public class MaintenanceWorker extends Thread {
 
     @Override
     public void run() {
-      
         try {
-
-            Thread.sleep(3000); 
+            while (true) {
+                management.manage(this.getName());
+                Thread.sleep(1000);
+            }
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-
     }
 }
