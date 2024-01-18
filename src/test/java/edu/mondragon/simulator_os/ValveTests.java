@@ -9,7 +9,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ValveTests {
+class ValveTests {
 
     @Test
     void testValveConstructor() {
@@ -33,7 +33,7 @@ public class ValveTests {
 
         valve.run();
 
-        verify(mockManagement, times(1)).writePressure(eq("Valve 1"), eq(5));
+        verify(mockManagement, times(1)).writePressure("Valve 1", 5);
     }
 
     private void setPrivateField(Object obj, String fieldName, Object value) {
