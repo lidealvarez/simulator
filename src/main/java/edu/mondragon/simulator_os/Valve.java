@@ -9,6 +9,8 @@ public class Valve extends Thread {
     private Management management;
     private Random rand;
 
+
+    
     public Valve(int id, Management management) {
         super("Valve " + id);
         this.management = management;
