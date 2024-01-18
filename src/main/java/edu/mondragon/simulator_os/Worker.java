@@ -1,10 +1,12 @@
 package edu.mondragon.simulator_os;
 
-public class Operator extends Thread {
+
+public class Worker extends Thread {
+
     private Management management;
 
-    public Operator(Management management, int id) {
-        super("Operator");
+    public Worker(Management management) {
+        super("Worker");
         this.management = management;
     }
 
@@ -12,8 +14,7 @@ public class Operator extends Thread {
     public void run() {
         while (!this.isInterrupted()) {
             try {
-                sleep(10000);
-                management.read(this.getName());
+                management.serveCustomers();
             } catch (InterruptedException e) {
                 this.interrupt();
             }

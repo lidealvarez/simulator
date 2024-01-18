@@ -4,26 +4,25 @@ import java.util.Random;
 
 public class Valve extends Thread {
 
+    private int arrivalTime = 0;
     private Management management;
     private Random rand;
-    private int valveId;
-    public Valve(Management management, int valveId) {
-        super("Valve " + valveId);
+
+    public Valve(int id, Management management) {
+        super("Valve " + id);
         this.management = management;
+        this.arrivalTime += 500 * id;
         rand = new Random();
-        this.valveId=valveId;
     }
 
     @Override
     public void run() {
         try {
-            while (true) {
-                management.write(this.getName(), valveId, rand.nextInt(15));
-                Thread.sleep(rand.nextInt(1000));
-            }
+            Thread.sleep(this.arrivalTime);
+            management.writePressure(getName(),rand.nextInt(15));
+        } catch (NullPointerException e) {
+            System.out.println(e.toString());
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
-
 }

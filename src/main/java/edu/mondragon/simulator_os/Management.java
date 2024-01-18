@@ -1,120 +1,94 @@
 package edu.mondragon.simulator_os;
 
-
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.locks.Condition;
+import java.util.Random;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Management {
-    private List<Integer> list;
+
+    private int badValve;
+    private long totalRepairTime; // Variable para llevar la suma total del tiempo de reparación
     private Lock mutex;
-    private int waitOperario;
-    private boolean haveAnomaly;
-    private Condition canRead, anomalyResolved;
-    private Queue<String> maintenanceQueue;
+
+    private Event workerReady;
+    private Event valveReady;
+    private Event fixed;
+    private Event valveGone;
 
     public Management() {
-        this.list = new ArrayList<>();
+        this.badValve = 0;
+        this.totalRepairTime = 0;
         this.mutex = new ReentrantLock();
-        this.waitOperario = 0;
-        this.haveAnomaly = false;
-        this.canRead = mutex.newCondition();
-        this.anomalyResolved = mutex.newCondition();
-        this.maintenanceQueue = new LinkedList<>();
+        this.workerReady = new Event(mutex.newCondition());
+        this.valveReady = new Event(mutex.newCondition());
+        this.fixed = new Event(mutex.newCondition());
+        this.valveGone = new Event(mutex.newCondition());
     }
 
-    public void read(String name) throws InterruptedException {
+    public void writePressure(String name, int pressure) throws InterruptedException {
+        System.out.println(name + "| pressure ->" + pressure);
         mutex.lock();
         try {
-            while (list.isEmpty() || haveAnomaly) {
-                waitOperario++;
-                System.out.println(name + " | Waiting for data or anomaly resolution...");
-                canRead.await();
-                waitOperario--;
+            if (pressure > 10 || pressure <= 0) {
+                // La válvula está defectuosa, proceder con la reparación
+                badValve++;
+                System.out.println(name + " waiting worker");
+                // rendezvous: wait barber first. Otherwise, customerReady signals are lost
+                workerReady.eWaitAndReset();
+                valveReady.eSignal();
+                System.out.println(name + " is fixing...");
+
+                long startTime = System.currentTimeMillis(); // Tiempo inicial
+
+                fixed.eWaitAndReset();
+
+                long endTime = System.currentTimeMillis(); // Tiempo final
+                // Calcular la diferencia de tiempo
+                long elapsedTime = endTime - startTime;
+                totalRepairTime += elapsedTime;
+                System.out.println(name + " is fixed 🪛");
+                System.out.println(name + " Time taken to fix: " + elapsedTime + " ms");
+
+                valveGone.eSignal();
+            } else {
+                // La válvula está bien, no es necesario repararla
+                System.out.println(name + " is OK ✅. No need for repair.");
             }
-
-            int pressure = list.get(0);
-            System.out.println(name + " | >  " + pressure);
-
-            if (pressure >= 10 && pressure <= 15) {
-                haveAnomaly = true;
-                System.out.println(name + " | Anomaly detected! Waiting for resolution...");
-                anomalyResolved.await();
-            }
-
-            list.clear();
-            System.out.println(name + " | Data read successfully");
-            canRead.signalAll();
         } finally {
             mutex.unlock();
         }
     }
 
-    public void write(String name, int valveId, int pressure) {
+    public void serveCustomers() throws InterruptedException {
+
         mutex.lock();
         try {
-            list.add(pressure);
-            System.out.println(name + " | >  " + pressure);
+            workerReady.eSignal();
+            valveReady.eWaitAndReset();
 
-            if (pressure >= 10 && pressure <= 15) {
-                haveAnomaly = true;
-                System.out.println(name + " | OperAnomaly detected! Waiting for resolution...");
-                anomalyResolved.await();
-            }
+            System.out.println("\t 👩‍🏭Worker fixing valve");
+            // Generar un tiempo aleatorio entre 500 y 1500 milisegundos
+            int randomTime = new Random().nextInt(1000) + 500;
+            Thread.sleep(randomTime);
+            // signal valve
+            fixed.eSignal();
+            System.out.println("\tWorker done");
 
-            canRead.signalAll();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            valveGone.eWaitAndReset();
         } finally {
             mutex.unlock();
         }
     }
 
-    public void manage(String name) {
-        mutex.lock();
-        try {
-            while (waitOperario == 0) {
-                System.out.println(name + " | Waiting for operario to start waiting...");
-                canRead.await();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            mutex.unlock();
-        }
+    public String getTotalRepairTimeandBadValves() {
+        String data;
+        double media;
 
-        // Perform maintenance actions (message passing to technician)
-        sendMaintenanceRequest(name);
-
-        // Simulate technician fixing the anomaly with a random sleep
-        simulateTechnicianFixing();
-
-        // Anomaly is resolved, signal to the operarios
-        mutex.lock();
-        try {
-            System.out.println(name + " | Anomaly resolved! Signaling operarios...");
-            anomalyResolved.signalAll();
-        } finally {
-            mutex.unlock();
-        }
+        media = totalRepairTime/ badValve;
+    
+        data = "Total Repair Time: " + totalRepairTime + " ms, Bad Valves: " + badValve + "\n Mean: " + media;
+        
+        return data; 
     }
-
-    private void sendMaintenanceRequest(String name) {
-        System.out.println(name + " | Sending maintenance request to technician");
-        maintenanceQueue.add("Maintenance request from " + name);
-    }
-
-    private void simulateTechnicianFixing() {
-        try {
-            System.out.println("Technician | Fixing the anomaly...");
-            Thread.sleep((long) (Math.random() * 5000));
-            System.out.println("Technician | Anomaly fixed!");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
+    
 }
