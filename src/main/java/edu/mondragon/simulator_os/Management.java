@@ -29,6 +29,7 @@ public class Management {
    
     }
 
+    @SuppressWarnings("java:S106")
     public void writePressure(String name, int pressure) throws InterruptedException {
         System.out.println(name + "| pressure ->" + pressure);
         mutex.lock();
@@ -62,7 +63,7 @@ public class Management {
             mutex.unlock();
         }
     }
-
+    @SuppressWarnings("java:S106")
     public void serveCustomers() throws InterruptedException {
 
         mutex.lock();
@@ -83,7 +84,7 @@ public class Management {
             mutex.unlock();
         }
     }
-
+    @SuppressWarnings("java:S106")
     public String getTotalRepairTimeandBadValves() {
         String data;
         double media;

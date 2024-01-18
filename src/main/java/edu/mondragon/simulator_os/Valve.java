@@ -14,7 +14,7 @@ public class Valve extends Thread {
         this.arrivalTime += 500 * id;
         rand = new Random();
     }
-
+    @SuppressWarnings("java:S106")
     @Override
     public void run() {
         try {
