@@ -1,6 +1,6 @@
 package edu.mondragon.simulator_os;
 
-import java.util.Random;
+import java.security.SecureRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -15,7 +15,7 @@ public class Management {
     private Event fixed;
     private Event valveGone;
 
-    private static final Random random = new Random();
+    private static final SecureRandom random = new SecureRandom();
 
 
     public Management() {
