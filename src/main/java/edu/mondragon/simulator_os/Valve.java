@@ -1,5 +1,6 @@
 package edu.mondragon.simulator_os;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 public class Valve extends Thread {
@@ -12,7 +13,7 @@ public class Valve extends Thread {
         super("Valve " + id);
         this.management = management;
         this.arrivalTime += 500 * id;
-        rand = new Random();
+        rand = new SecureRandom();
     }
     @SuppressWarnings("java:S106")
     @Override
