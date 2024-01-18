@@ -1,11 +1,10 @@
 package edu.mondragon.simulator_os;
 
-
 public class SimulatorOsApplication {
     final static int NUMVALVES = 15;
     private static Management management;
-    private Worker worker;
-    private Valve valves[];
+    protected Worker worker;
+    protected Valve valves[];
 
     public SimulatorOsApplication() {
         management = new Management();
