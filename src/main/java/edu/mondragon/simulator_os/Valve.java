@@ -23,6 +23,7 @@ public class Valve extends Thread {
         } catch (NullPointerException e) {
             System.out.println(e.toString());
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 }

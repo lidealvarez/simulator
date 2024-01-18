@@ -15,6 +15,9 @@ public class Management {
     private Event fixed;
     private Event valveGone;
 
+    private static final Random random = new Random();
+
+
     public Management() {
         this.badValve = 0;
         this.totalRepairTime = 0;
@@ -23,6 +26,7 @@ public class Management {
         this.valveReady = new Event(mutex.newCondition());
         this.fixed = new Event(mutex.newCondition());
         this.valveGone = new Event(mutex.newCondition());
+   
     }
 
     public void writePressure(String name, int pressure) throws InterruptedException {
@@ -66,9 +70,9 @@ public class Management {
             workerReady.eSignal();
             valveReady.eWaitAndReset();
 
-            System.out.println("\t 👩‍🏭Worker fixing valve");
+            System.out.println("\t Worker fixing valve");
             // Generar un tiempo aleatorio entre 500 y 1500 milisegundos
-            int randomTime = new Random().nextInt(1000) + 500;
+            int randomTime = random.nextInt(1000) + 500;
             Thread.sleep(randomTime);
             // signal valve
             fixed.eSignal();
@@ -84,7 +88,7 @@ public class Management {
         String data;
         double media;
 
-        media = totalRepairTime/ badValve;
+        media = (double)totalRepairTime/ badValve;
     
         data = "Total Repair Time: " + totalRepairTime + " ms, Bad Valves: " + badValve + "\n Mean: " + media;
         

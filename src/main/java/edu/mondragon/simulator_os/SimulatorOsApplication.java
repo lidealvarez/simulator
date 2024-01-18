@@ -1,10 +1,10 @@
 package edu.mondragon.simulator_os;
 
 public class SimulatorOsApplication {
-    final static int NUMVALVES = 15;
-    private static Management management;
+    static final int NUMVALVES = 15;
+    protected static Management management;
     protected Worker worker;
-    protected Valve valves[];
+    protected Valve[] valves;
 
     public SimulatorOsApplication() {
         management = new Management();
@@ -28,7 +28,14 @@ public class SimulatorOsApplication {
                 customer.join();
             }
             worker.interrupt();
-            worker.join();
+
+            try {
+                worker.join();
+
+            } catch (InterruptedException e) {
+
+                Thread.currentThread().interrupt();
+            }
         } catch (InterruptedException e) {
         }
     }
