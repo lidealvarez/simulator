@@ -28,6 +28,7 @@ public class Management {
         this.valveGone = new Event(mutex.newCondition());
    
     }
+
     @SuppressWarnings("java:S106")
     public void writePressure(String name, int pressure) throws InterruptedException {
         System.out.println(name + "| pressure ->" + pressure);

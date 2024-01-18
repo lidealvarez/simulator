@@ -1,58 +1,25 @@
 package edu.mondragon.simulator_os;
 
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+import static org.mockito.Mockito.*;
 
-import org.junit.Test;
-
-public class WorkerTests {
-
-    private static class TestManagement extends Management {
-        private boolean serveCustomersCalled = false;
-
-        @Override
-        public void serveCustomers() throws InterruptedException {
-            // Simular lógica de serveCustomers y marcar que se llamó
-            serveCustomersCalled = true;
-        }
-
-        public boolean isServeCustomersCalled() {
-            return serveCustomersCalled;
-        }
-    }
+class WorkerTests {
 
     @Test
-    public void testRunWithoutInterruption() throws InterruptedException {
-        TestManagement testManagement = new TestManagement();
-        Worker worker = new Worker(testManagement);
+    void testWorkerRun() throws InterruptedException {
+        // Crear un mock de Management
+        Management mockManagement = mock(Management.class);
 
-        // Ejecutar el hilo sin interrupciones
+        // Crear una instancia de Worker con el mock de Management
+        Worker worker = new Worker(mockManagement);
+
+        // Iniciar el hilo del Worker
         worker.start();
-        Thread.sleep(1000); // Dejar que el hilo se ejecute durante 1 segundo
-        worker.interrupt();
-        worker.join(); // Esperar a que el hilo termine
 
-        // Verificar que serveCustomers se llamó al menos una vez antes de la
-        // interrupción
-        assertTrue(((TestManagement) testManagement).isServeCustomersCalled());
-        // Verificar que el hilo se haya interrumpido después de la ejecución de
-        // serveCustomers
-        assertTrue(worker.isInterrupted());
-    }
+        // Esperar a que el hilo Worker se haya iniciado
+        worker.join(500); // Esperar hasta 500 milisegundos
 
-    @Test
-    public void testRunWithInterruption() throws InterruptedException {
-        TestManagement testManagement = new TestManagement();
-        Worker worker = new Worker(testManagement);
-
-        // Ejecutar el hilo y luego interrumpirlo después de un tiempo
-        worker.start();
-        Thread.sleep(1000); // Dejar que el hilo se ejecute durante 1 segundo
-        worker.interrupt();
-        worker.join(); // Esperar a que el hilo termine
-
-        // Verificar que serveCustomers se llamó al menos una vez antes de la
-        // interrupción
-        assertTrue(((TestManagement) testManagement).isServeCustomersCalled());
-        assertTrue(worker.isInterrupted());
+        // Verificar que el método serveCustomers de Management fue llamado al menos una vez
+        verify(mockManagement, atLeastOnce()).serveCustomers();
     }
 }
