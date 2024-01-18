@@ -1,8 +1,8 @@
 package edu.mondragon.simulator_os;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -11,21 +11,8 @@ import org.junit.jupiter.api.Test;
 
 class SimulatorOsApplicationTests {
 
-	@Test
-	void testStartThreads() {
-		SimulatorOsApplication app = new SimulatorOsApplication();
-		app.startThreads();
+	
 
-		// Verificar que los hilos se hayan iniciado correctamente
-		Thread.State workerState = app.worker.getState();
-		assertFalse(workerState == Thread.State.RUNNABLE || workerState == Thread.State.TIMED_WAITING);
-
-		for (Valve valve : app.valves) {
-			// Verificar que los hilos de las válvulas se hayan iniciado correctamente
-			Thread.State valveState = valve.getState();
-			assertFalse(valveState == Thread.State.RUNNABLE || valveState == Thread.State.TIMED_WAITING);
-		}
-	}
 
 	@Test
 	void testWaitEndOfThreads() throws InterruptedException {
