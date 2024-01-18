@@ -11,9 +11,9 @@ public class Event {
         this(condition, true);
     }
 
-    public Event(Condition condition, boolean mustWait_initially) {
+    public Event(Condition condition, boolean mustWaitInitially) {
         this.condition = condition;
-        this.mustWait = mustWait_initially;
+        this.mustWait = mustWaitInitially;
     }
 
     public void eWait() throws InterruptedException {

@@ -52,7 +52,7 @@ public class SimulatorOsApplication {
             System.out.println(management.getTotalRepairTimeandBadValves());
         } catch (Exception e) {
             // Registra la excepción en un sistema de registro
-            e.printStackTrace();
+            System.err.println("Error en la aplicación: " + e.getMessage());
         }
     }
     
