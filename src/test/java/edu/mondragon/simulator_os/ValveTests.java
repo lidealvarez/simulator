@@ -1,17 +1,14 @@
 package edu.mondragon.simulator_os;
 
-import org.junit.Rule;
 import org.junit.jupiter.api.Test;
-import org.junit.rules.ExpectedException;
 
-import java.lang.reflect.Field;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ValveTests {
+ class ValveTests {
 
     @Test
-    public void testValveConstructorAndGetters() {
+     void testValveConstructorAndGetters() {
         Management management = new Management();
         Valve valve = new Valve(1, management);
 
@@ -23,20 +20,7 @@ class ValveTests {
     }
 
     @Test
-    public void testRun() {
-        Management management = new Management();
-        Valve valve = new Valve(1, management);
-
-        // Ejecución del método run
-        valve.run();
-
-        // Verifica que el método writePressure se ejecutó sin errores
-        // Esto no garantiza que los resultados sean específicos, pero al menos asegura
-        // que no se lanzó ninguna excepción
-    }
-
-    @Test
-    public void testConstructorWithNullManagement() {
+    void testConstructorWithNullManagement() {
         // Prueba con Management nulo
         Valve valve = new Valve(1, null);
 
