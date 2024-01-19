@@ -4,8 +4,8 @@ import java.util.concurrent.locks.Condition;
 
 public class Event {
 
-    private boolean mustWait;
-    private Condition condition;
+    protected boolean mustWait;
+    protected Condition condition;
 
     public Event(Condition condition) {
         this(condition, true);
