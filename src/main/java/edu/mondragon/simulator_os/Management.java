@@ -10,10 +10,11 @@ public class Management {
     private long totalRepairTime; // Variable para llevar la suma total del tiempo de reparación
     private Lock mutex;
 
-    private Event workerReady;
+   private Event workerReady;
     private Event valveReady;
     private Event fixed;
     private Event valveGone;
+    
 
     private static final SecureRandom random = new SecureRandom();
 
@@ -36,6 +37,7 @@ public class Management {
         try {
             if (pressure > 10 || pressure <= 0) {
                 // La válvula está defectuosa, proceder con la reparación
+                //si entra aki haz put, blockingqueue, 
                 badValve++;
                 System.out.println(name + " waiting worker");
                 // rendezvous: wait barber first. Otherwise, customerReady signals are lost
@@ -85,7 +87,7 @@ public class Management {
         }
     }
     @SuppressWarnings("java:S106")
-    public String getTotalRepairTimeandBadValves() {
+    public String getTotalRepairTimeAndBadValves() {
         String data;
         double media;
 

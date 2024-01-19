@@ -49,7 +49,7 @@ public class SimulatorOsApplication {
             SimulatorOsApplication app = new SimulatorOsApplication();
             app.startThreads();
             app.waitEndOfThreads();
-            System.out.println(management.getTotalRepairTimeandBadValves());
+            System.out.println(management.getTotalRepairTimeAndBadValves());
         } catch (Exception e) {
             // Registra la excepción en un sistema de registro
             System.err.println("Error en la aplicación: " + e.getMessage());
