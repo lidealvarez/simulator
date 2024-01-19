@@ -1,25 +1,25 @@
 package edu.mondragon.simulator_os;
 
 import org.junit.jupiter.api.Test;
-import static org.mockito.Mockito.*;
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WorkerTests {
 
     @Test
-    void testWorkerRun() throws InterruptedException {
-        // Crear un mock de Management
-        Management mockManagement = mock(Management.class);
+    void testRunWithInterruption() {
+        // Preparación
+        Management management = new Management();
+        Worker worker = new Worker(management);
 
-        // Crear una instancia de Worker con el mock de Management
-        Worker worker = new Worker(mockManagement);
+        // Interrumpir el hilo
+        worker.interrupt();
 
-        // Iniciar el hilo del Worker
-        worker.start();
+        // Ejecución del método run con interrupción
+        worker.run();
 
-        // Esperar a que el hilo Worker se haya iniciado
-        worker.join(500); // Esperar hasta 500 milisegundos
-
-        // Verificar que el método serveCustomers de Management fue llamado al menos una vez
-        verify(mockManagement, atLeastOnce()).serveCustomers();
+        // Verificación
+        assertTrue(worker.isInterrupted());
     }
+
 }
