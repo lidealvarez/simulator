@@ -22,6 +22,11 @@ public class Event {
         }
     }
 
+    public boolean getMustWait() {
+        return mustWait;
+    }
+
+
     public void eReset() {
         mustWait = true;
     }
