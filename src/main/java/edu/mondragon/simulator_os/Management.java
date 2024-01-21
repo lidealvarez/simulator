@@ -3,31 +3,33 @@ package edu.mondragon.simulator_os;
 import java.security.SecureRandom;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class Management {
 
     private int badValve;
     private long totalRepairTime; // Variable para llevar la suma total del tiempo de reparación
     private Lock mutex;
-
-   private Event workerReady;
-    private Event valveReady;
-    private Event fixed;
-    private Event valveGone;
-    
+    private BlockingQueue<AnomalyMessage> anomalyQueue;  // Cambio de Integer a AnomalyMessage
 
     private static final SecureRandom random = new SecureRandom();
-
 
     public Management() {
         this.badValve = 0;
         this.totalRepairTime = 0;
         this.mutex = new ReentrantLock();
-        this.workerReady = new Event(mutex.newCondition());
-        this.valveReady = new Event(mutex.newCondition());
-        this.fixed = new Event(mutex.newCondition());
-        this.valveGone = new Event(mutex.newCondition());
-   
+        this.anomalyQueue = new LinkedBlockingQueue<>();
+    }
+
+    public void sendAnomalyMessage(String name) throws InterruptedException {
+        // Envia un mensaje de anomalía (válvula defectuosa)
+        anomalyQueue.put(new AnomalyMessage(name));
+    }
+
+    public AnomalyMessage receiveAnomalyMessage() throws InterruptedException {
+        // Recibe un mensaje de anomalía de la cola
+        return anomalyQueue.take();
     }
 
     @SuppressWarnings("java:S106")
@@ -37,65 +39,54 @@ public class Management {
         try {
             if (pressure > 10 || pressure <= 0) {
                 // La válvula está defectuosa, proceder con la reparación
-                //si entra aki haz put, blockingqueue, 
                 badValve++;
-                System.out.println(name + " waiting worker");
-                // rendezvous: wait barber first. Otherwise, customerReady signals are lost
-                workerReady.eWaitAndReset();
-                valveReady.eSignal();
                 System.out.println(name + " is fixing...");
 
-                long startTime = System.currentTimeMillis(); // Tiempo inicial
+                // Enviar un mensaje de anomalía con el identificador de la válvula defectuosa
+                sendAnomalyMessage(name);  // Reemplaza 123 con el identificador real de la válvula
 
-                fixed.eWaitAndReset();
-
-                long endTime = System.currentTimeMillis(); // Tiempo final
-                // Calcular la diferencia de tiempo
+                long startTime = System.currentTimeMillis();
+                // Simular la reparación
+                int randomTime = random.nextInt(1000) + 500;
+                Thread.sleep(randomTime);
+                long endTime = System.currentTimeMillis();
                 long elapsedTime = endTime - startTime;
-                totalRepairTime += elapsedTime;
-                System.out.println(name + " is fixed 🪛");
-                System.out.println(name + " Time taken to fix: " + elapsedTime + " ms");
 
-                valveGone.eSignal();
+                totalRepairTime += elapsedTime;
+                System.out.println(name + " is fixed for valve: " + name + " 🪛");
+                System.out.println(name + " Time taken to fix: " + elapsedTime + " ms");
             } else {
-                // La válvula está bien, no es necesario repararla
                 System.out.println(name + " is OK ✅. No need for repair.");
             }
         } finally {
             mutex.unlock();
         }
     }
+
     @SuppressWarnings("java:S106")
     public void serveCustomers() throws InterruptedException {
+        System.out.println("\t Worker fixing valve");
 
-        mutex.lock();
-        try {
-            workerReady.eSignal();
-            valveReady.eWaitAndReset();
+        // Recibir un mensaje de anomalía
+        AnomalyMessage anomalyMessage = receiveAnomalyMessage();
+        String anomalyId = anomalyMessage.getValveId();
 
-            System.out.println("\t Worker fixing valve");
-            // Generar un tiempo aleatorio entre 500 y 1500 milisegundos
-            int randomTime = random.nextInt(1000) + 500;
-            Thread.sleep(randomTime);
-            // signal valve
-            fixed.eSignal();
-            System.out.println("\tWorker done");
+        // Realizar la reparación utilizando la información del mensaje
+        int randomTime = random.nextInt(1000) + 500;
+        Thread.sleep(randomTime);
 
-            valveGone.eWaitAndReset();
-        } finally {
-            mutex.unlock();
-        }
+        System.out.println("\tWorker done for valve: " + anomalyId);
     }
+
     @SuppressWarnings("java:S106")
     public String getTotalRepairTimeAndBadValves() {
         String data;
         double media;
 
-        media = (double)totalRepairTime/ badValve;
-    
+        media = (double) totalRepairTime / badValve;
+
         data = "Total Repair Time: " + totalRepairTime + " ms, Bad Valves: " + badValve + "\n Mean: " + media;
-        
-        return data; 
+
+        return data;
     }
-    
 }
