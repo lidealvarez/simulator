@@ -8,8 +8,8 @@ public class Valve extends Thread {
     private int arrivalTime = 0;
     private Management management;
     private Random rand;
-
-
+//arrayList (denbora, zenbatAldizAnomalia)
+    //semaforoa 
     
     public Valve(int id, Management management) {
         super("Valve " + id);
@@ -45,4 +45,5 @@ public class Valve extends Thread {
             Thread.currentThread().interrupt();
         }
     }
-}
+}//while bat sartu, balbularen bizitza si esta bien no pasa nda, gaizki baldin banadgo acquire itet eta workerra libre daonian release ingoit 
+//zenbat aldiz apurtu, eta zenbat denbora tardatu dan konpontzen aldi bakoitzian

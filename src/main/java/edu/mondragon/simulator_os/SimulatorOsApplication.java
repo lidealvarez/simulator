@@ -1,10 +1,16 @@
 package edu.mondragon.simulator_os;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class SimulatorOsApplication {
     static final int NUMVALVES = 15;
     private static Management management;
     protected Worker worker;
     protected Valve[] valves;
+    private ScheduledExecutorService executorService;
+
     static {
         management = new Management();
     }
@@ -19,41 +25,51 @@ public class SimulatorOsApplication {
 
     public void startThreads() {
         worker.start();
-        for (Valve customer : valves) {
-            customer.start();
+        for (Valve valve : valves) {
+            valve.start();
         }
+
+        executorService = Executors.newSingleThreadScheduledExecutor();
+        executorService.schedule(this::waitEndOfThreads, 20, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("java:S106")
     public void waitEndOfThreads() {
+        // Detener los hilos después de 60 segundos
+        for (Valve valve : valves) {
+            valve.interrupt();
+        }
+        worker.interrupt();
+
+        // Esperar a que todos los hilos terminen
         try {
-            // Esperar a que todas las válvulas terminen
-            for (Valve customer : valves) {
-                customer.join();
+            for (Valve valve : valves) {
+                valve.join();
             }
-    
-            // Interrumpir al trabajador y esperar a que termine
-            worker.interrupt();
+
             worker.join();
         } catch (InterruptedException e) {
-            // Manejar la interrupción aquí o propagarla a niveles superiores
             Thread.currentThread().interrupt();
-            // Loggear o imprimir información de la excepción, si es necesario
             System.err.println("Error al esperar que los hilos finalicen: " + e.getMessage());
         }
+
+        // Apagar el ScheduledExecutorService
+        executorService.shutdown();
     }
-    
-    @SuppressWarnings("java:S106")
+
     public static void main(String[] args) {
         try {
+
             SimulatorOsApplication app = new SimulatorOsApplication();
             app.startThreads();
-            app.waitEndOfThreads();
+            System.out.println("Simulator started.");
+
+            // Esperar a que la tarea de apagado complete
+            app.executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+
             System.out.println(management.getTotalRepairTimeAndBadValves());
         } catch (Exception e) {
-            // Registra la excepción en un sistema de registro
             System.err.println("Error en la aplicación: " + e.getMessage());
         }
     }
-    
 }
