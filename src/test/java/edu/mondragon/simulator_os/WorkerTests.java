@@ -18,7 +18,6 @@ class WorkerTests {
         // Ejecución del método run con interrupción
         worker.run();
 
-        // Verificación
         assertTrue(worker.isInterrupted());
     }
 

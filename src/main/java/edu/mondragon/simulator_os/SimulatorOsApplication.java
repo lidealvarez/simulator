@@ -78,4 +78,6 @@ public class SimulatorOsApplication {
             System.err.println("Error en la aplicación: " + e.getMessage());
         }
     }
+
+    
 }

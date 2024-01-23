@@ -94,10 +94,12 @@ class SimulatorOsApplicationTests {
                 } catch (InterruptedException e) {
                     System.err.println("Error en el método main: " + e.getMessage());
                 }
-                
+
             }
         };
         assertDoesNotThrow(() -> app.main(new String[] {}));
     }
 
+
+    
 }
