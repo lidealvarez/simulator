@@ -6,8 +6,10 @@ import java.util.concurrent.TimeUnit;
 
 public class SimulatorOsApplication {
     static final int NUMVALVES = 15;
+    static final int NUMWORKERS = 3;
+
     private static Management management;
-    protected Worker worker;
+    protected Worker[] workers;
     protected Valve[] valves;
     private ScheduledExecutorService executorService;
 
@@ -16,38 +18,42 @@ public class SimulatorOsApplication {
     }
 
     public SimulatorOsApplication() {
-        worker = new Worker(management);
+        workers = new Worker[NUMWORKERS];
         valves = new Valve[NUMVALVES];
         for (int i = 0; i < NUMVALVES; i++) {
             valves[i] = new Valve(i, management);
         }
+        for (int i = 0; i < NUMWORKERS; i++) {
+            workers[i] = new Worker(i, management);
+        }
     }
 
     public void startThreads() {
-        worker.start();
         for (Valve valve : valves) {
             valve.start();
         }
-
+        for (Worker worker : workers) {
+            worker.start();
+        }
         executorService = Executors.newSingleThreadScheduledExecutor();
         executorService.schedule(this::waitEndOfThreads, 20, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("java:S106")
     public void waitEndOfThreads() {
-        // Detener los hilos después de 60 segundos
         for (Valve valve : valves) {
             valve.interrupt();
         }
-        worker.interrupt();
-
-        // Esperar a que todos los hilos terminen
+        for (Worker worker : workers) {
+            worker.interrupt();
+        }
         try {
             for (Valve valve : valves) {
                 valve.join();
             }
-
-            worker.join();
+            for (Worker worker : workers) {
+                worker.join();
+            }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.err.println("Error al esperar que los hilos finalicen: " + e.getMessage());

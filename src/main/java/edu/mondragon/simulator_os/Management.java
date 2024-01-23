@@ -5,34 +5,30 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.Semaphore;
 
 public class Management {
 
     private int badValve;
-    private long totalRepairTime; // Variable para llevar la suma total del tiempo de reparación
+    private long totalRepairTime;
     private Lock mutex;
-    private BlockingQueue<Valve> anomalyQueue; // Cambio de Integer a AnomalyMessage
+    private Lock mutexWorker;
+    private BlockingQueue<Valve> anomalyQueue; 
     private static final SecureRandom random = new SecureRandom();
-    // dos colas problemas gordos y problemas lite
-    private Semaphore valveSemaphore;
+
 
     public Management() {
         this.badValve = 0;
         this.totalRepairTime = 0;
         this.mutex = new ReentrantLock();
+        this.mutexWorker = new ReentrantLock();
+
         this.anomalyQueue = new LinkedBlockingQueue<>();
-        this.valveSemaphore = new Semaphore(0);
 
     }
 
     public void sendAnomalyMessage(Valve valve) {
         anomalyQueue.add(valve);
 
-    }
-
-    public Valve receiveAnomalyMessage() throws InterruptedException {
-        return anomalyQueue.take();
     }
 
     @SuppressWarnings("java:S106")
@@ -44,32 +40,34 @@ public class Management {
             mutex.lock();
             badValve++;
             mutex.unlock();
-            
 
             sendAnomalyMessage(valve);
-            valveSemaphore.acquire();
         } else {
             System.out.println(valve.getValveId() + " is OK ✅. No need for repair.");
         }
     }
 
-    public void fixValve() throws InterruptedException {
-       
-        Valve anomalyValve = receiveAnomalyMessage();
-        System.out.println("\t Worker fixing valve " + anomalyValve.getValveId());
+    public void fixValve(Worker worker) throws InterruptedException {
+
+        Valve anomalyValve = anomalyQueue.take();
+        System.out.println("\t Worker " + worker.getWorkerId() + " fixing valve " + anomalyValve.getValveId());
 
         long startTime = System.currentTimeMillis();
         int randomTime = random.nextInt(1000) + 500;
         Thread.sleep(randomTime);
         long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
-        anomalyValve.setPressure(random.nextInt(1,10));
-
-
+        anomalyValve.setPressure(random.nextInt(1, 10));
+        // job sortu y es el que tiene el semaforo entre la valvula y worker , cuando
+        // una valvula se rompe genera job y lo pone a esperar en ese trabajo, cunado
+        // worker arregle hace release
+        mutexWorker.lock();
         totalRepairTime += elapsedTime;
+        mutexWorker.unlock();
 
-        valveSemaphore.release();
-        System.out.println("\tWorker fixed valve: " + anomalyValve.getValveId() + " Pressure: " + anomalyValve.getPressure());
+        anomalyValve.valveSemaphore.release();
+        System.out.println(
+                "\t Worker " + worker.getWorkerId() +" fixed valve: " + anomalyValve.getValveId() + " Pressure: " + anomalyValve.getPressure());
     }
 
     @SuppressWarnings("java:S106")

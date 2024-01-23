@@ -10,7 +10,7 @@ class WorkerTests {
     void testRunWithInterruption() {
         // Preparación
         Management management = new Management();
-        Worker worker = new Worker(management);
+        Worker worker = new Worker(1, management);
 
         // Interrumpir el hilo
         worker.interrupt();

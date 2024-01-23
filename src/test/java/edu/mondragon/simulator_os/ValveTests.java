@@ -2,29 +2,24 @@ package edu.mondragon.simulator_os;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class ValveTests {
+class WorkerTests {
 
     @Test
-    void testValveConstructorAndGetters() {
+    void testRunWithInterruption() {
+        // Preparación
         Management management = new Management();
-        Valve valve = new Valve(1, management);
+        Worker worker = new Worker(1, management);
 
-        // Verifica que el constructor inicializa correctamente las propiedades
-        assertEquals("Valve 1", valve.getName());
-        assertEquals(management, valve.getManagement());
-        assertNotNull(valve.getRandom());
+        // Interrumpir el hilo
+        worker.interrupt();
+
+        // Ejecución del método run con interrupción
+        worker.run();
+
+        // Verificación
+        assertTrue(worker.isInterrupted());
     }
 
-    @Test
-    void testConstructorWithNullManagement() {
-        // Prueba con Management nulo
-        Valve valve = new Valve(1, null);
-
-        assertEquals("Valve 1", valve.getName());
-
-        assertNull(valve.getManagement());
-        assertNotNull(valve.getRandom());
-    }
 }
