@@ -10,54 +10,129 @@ public class Management {
 
     private int badValve;
     private long totalRepairTime;
-    private Lock mutex;
+    private Lock mutexBadValves;
     private Lock mutexWorker;
-    private BlockingQueue<Valve> anomalyQueue; 
+    private BlockingQueue<Job> allValvesQueue;
+    private BlockingQueue<Job> anomalyValvesQueue;
     private static final SecureRandom random = new SecureRandom();
+    private boolean operatorExists;
 
 
     public Management() {
         this.badValve = 0;
         this.totalRepairTime = 0;
-        this.mutex = new ReentrantLock();
+        this.mutexBadValves = new ReentrantLock();
         this.mutexWorker = new ReentrantLock();
-
-        this.anomalyQueue = new LinkedBlockingQueue<>();
+        this.operatorExists = SimulatorOsApplication.isOperatorExists();
+        this.allValvesQueue = new LinkedBlockingQueue<>();
+        this.anomalyValvesQueue = new LinkedBlockingQueue<>();
 
     }
 
-    public void sendAnomalyMessage(Valve valve) {
-        anomalyQueue.add(valve);
+    public boolean isOperatorExists() {
+        return operatorExists;
+    }
 
+    public void setOperatorExists(boolean value) {
+        operatorExists = value;
+    }
+    
+    public int getBadValve() {
+        return badValve;
+    }
+
+    public long getTotalRepairTime() {
+        return totalRepairTime;
+    }
+
+    public void setTotalRepairTime(long totalRepairTime) {
+        this.totalRepairTime = totalRepairTime;
+    }
+
+    public void setBadValve(int badValve) {
+        this.badValve = badValve;
+    }
+
+    public void sendAnomalyMessage(Job job) {
+        anomalyValvesQueue.add(job);
+    }
+
+    public Job receiveAnomalyMessage() throws InterruptedException {
+        return anomalyValvesQueue.take();
+    }
+
+    public void sendNormalMessage(Job job) {
+        allValvesQueue.add(job);
+    }
+
+    public Job receiveNormalMessage() throws InterruptedException {
+        return allValvesQueue.take();
     }
 
     @SuppressWarnings("java:S106")
     public void writePressure(Valve valve) throws InterruptedException {
         System.out.println("Valve " + valve.getValveId() + "| pressure ->" + valve.getPressure());
-
-        if (valve.getPressure() > 10 || valve.getPressure() == 0) {
+        Job job = new Job(valve);
+        if(operatorExists){
+            sendNormalMessage(job);
+        }else{
+            if (valve.getPressure() > 10 || valve.getPressure() == 0) {
             System.out.println("Anomaly has been detected in valve: " + valve.getValveId());
-            mutex.lock();
+            mutexBadValves.lock();
             badValve++;
-            mutex.unlock();
+            mutexBadValves.unlock();
 
-            sendAnomalyMessage(valve);
-        } else {
-            System.out.println(valve.getValveId() + " is OK ✅. No need for repair.");
+            sendAnomalyMessage(job);
+            } else {
+                System.out.println(valve.getValveId() + " is OK ✅. No need for repair.");
+                valve.valveSemaphore.release();
+            }
+        }
+    }
+    public void findAnomalies() throws InterruptedException{
+        Job job = receiveNormalMessage();
+        Valve normalValve =  job.getValve();
+
+        System.out.println("\t\t\tOperario beidatezen " + normalValve.getValveId());
+        int randomTime1 = random.nextInt(1000) + 500;
+        double beiratzenDenbora= denbora(randomTime1);
+        totalRepairTime += beiratzenDenbora;
+        System.out.println("\t\t\tReviewing time(operator):" + beiratzenDenbora);
+
+        if (normalValve.getPressure() > 10 || normalValve.getPressure() == 0) {
+            System.out.println("\t\t\tOperariok Anomaly has been detected in valve: " + normalValve.getValveId());
+            mutexBadValves.lock();
+            badValve++;
+            mutexBadValves.unlock();
+
+            double gaizkiDenbora= denbora(randomTime1);
+            totalRepairTime += gaizkiDenbora;
+            System.out.println("\t\t\tWarning time(operator): " + gaizkiDenbora);
+
+
+            // Envía la válvula con problema gordo a fixValve
+            sendAnomalyMessage(job);
+        }
+        else{
+            System.out.println(normalValve.getValveId() + " is OK ✅. No need for repair.");
+            normalValve.valveSemaphore.release();
         }
     }
 
     public void fixValve(Worker worker) throws InterruptedException {
+        Job job = receiveAnomalyMessage();
+        Valve anomalyValve = job.getValve();
+        System.out.println("\t\t\t\t\t\t\t Worker " + worker.getWorkerId() + " fixing valve " + anomalyValve.getValveId());
 
-        Valve anomalyValve = anomalyQueue.take();
-        System.out.println("\t Worker " + worker.getWorkerId() + " fixing valve " + anomalyValve.getValveId());
-
-        long startTime = System.currentTimeMillis();
+        // long startTime = System.currentTimeMillis();
         int randomTime = random.nextInt(1000) + 500;
-        Thread.sleep(randomTime);
-        long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
         anomalyValve.setPressure(random.nextInt(1, 10));
+        double elapsedTime= denbora(randomTime);
+
+        // Thread.sleep(randomTime);
+        // long endTime = System.currentTimeMillis();
+        // long elapsedTime = endTime - startTime;
+
         // job sortu y es el que tiene el semaforo entre la valvula y worker , cuando
         // una valvula se rompe genera job y lo pone a esperar en ese trabajo, cunado
         // worker arregle hace release
@@ -67,7 +142,17 @@ public class Management {
 
         anomalyValve.valveSemaphore.release();
         System.out.println(
-                "\t Worker " + worker.getWorkerId() +" fixed valve: " + anomalyValve.getValveId() + " Pressure: " + anomalyValve.getPressure());
+                "\t\t\t\t\t\t\t Worker " + worker.getWorkerId() +" fixed valve: " + anomalyValve.getValveId() + " Pressure: " + anomalyValve.getPressure() + "Fixing Time (technician): "+ elapsedTime);
+    }
+
+
+    public double denbora(int randomTime) throws InterruptedException{
+        long startTime = System.currentTimeMillis();
+        Thread.sleep(randomTime);
+        long endTime = System.currentTimeMillis();
+        long elapsedTime = endTime - startTime;
+        return elapsedTime;
+
     }
 
     @SuppressWarnings("java:S106")
@@ -80,8 +165,5 @@ public class Management {
 
         return data;
     }
-
-
-    
 }
 

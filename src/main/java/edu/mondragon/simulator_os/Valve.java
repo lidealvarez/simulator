@@ -5,8 +5,6 @@ import java.util.Random;
 import java.util.concurrent.Semaphore;
 
 public class Valve extends Thread {
-    
-
     private Management management;
     private Random rand;
     private int valveId;
@@ -19,7 +17,6 @@ public class Valve extends Thread {
         this.management = management;
         rand = new SecureRandom();
         this.valveSemaphore = new Semaphore(0);
-
     }
 
     public Management getManagement() {
@@ -55,9 +52,4 @@ public class Valve extends Thread {
             }
         }
     }
-    // cada valvula su propio semaoro
 }
-// while bat sartu, balbularen bizitza si esta bien no pasa nda, gaizki baldin
-// banadgo acquire itet eta workerra libre daonian release ingoit
-// zenbat aldiz apurtu, eta zenbat denbora tardatu dan konpontzen aldi
-// bakoitzian
