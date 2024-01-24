@@ -143,7 +143,7 @@ public class Management {
         long startTime = System.currentTimeMillis();
         Thread.sleep(randomTime);
         long endTime = System.currentTimeMillis();
-        return (double)(endTime - startTime);
+        return endTime - startTime;
 
     }
 
