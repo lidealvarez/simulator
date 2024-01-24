@@ -11,59 +11,6 @@ import java.util.concurrent.BlockingQueue;
 class ManagementTests {
 
     @Test
-    void testSendAnomalyMessage() {
-        Valve valve = new Valve(1, new Management());
-        Management management = new Management();
-        Job job = new Job(valve);
-        management.sendAnomalyMessage(job);
-        // Agrega aserciones según sea necesario
-        BlockingQueue<Job> anomalyValvesQueue = getField(management, "anomalyValvesQueue");
-        assertEquals(1, anomalyValvesQueue.size());
-        assertEquals(job, anomalyValvesQueue.poll());
-    }
-
-    @Test
-    void testReceiveAnomalyMessage() {
-        Valve valve = new Valve(1, new Management());
-        Management management = new Management();
-        Job job = new Job(valve);
-        management.sendAnomalyMessage(job);
-        try {
-            Job receivedJob = management.receiveAnomalyMessage();
-            assertNotNull(receivedJob);
-            assertEquals(valve, receivedJob.getValve());
-        } catch (InterruptedException e) {
-            fail("Unexpected interruption");
-        }
-    }
-
-    @Test
-    void testSendNormalMessage() {
-        Valve valve = new Valve(1, new Management());
-        Management management = new Management();
-        Job job = new Job(valve);
-        management.sendNormalMessage(job);
-        BlockingQueue<Job> allValvesQueue = getField(management, "allValvesQueue");
-        assertEquals(1, allValvesQueue.size());
-        assertEquals(job, allValvesQueue.poll());
-    }
-
-    @Test
-    void testReceiveNormalMessage() {
-        Valve valve = new Valve(1, new Management());
-        Management management = new Management();
-        Job job = new Job(valve);
-        management.sendNormalMessage(job);
-        try {
-            Job receivedJob = management.receiveNormalMessage();
-            assertNotNull(receivedJob);
-            assertEquals(valve, receivedJob.getValve());
-        } catch (InterruptedException e) {
-            fail("Unexpected interruption");
-        }
-    }
-
-    @Test
     void testWritePressure() {
         Management management = new Management();
         Valve valve = new Valve(1, management);

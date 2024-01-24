@@ -48,7 +48,7 @@ public class SimulatorOsApplication {
             worker.start();
         }
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.schedule(this::waitEndOfThreads, 90, TimeUnit.SECONDS);
+        executorService.schedule(this::waitEndOfThreads, 60, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("java:S106")
@@ -91,6 +91,11 @@ public class SimulatorOsApplication {
     
             // Esperar a que la tarea de apagado complete
             app.executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+            if(OPERATOR_EXISTS){
+                System.out.println("------System with operator------");
+            }else{
+                System.out.println("------System without operator------");
+            }
     
             System.out.println(management.getTotalRepairTimeAndBadValves());
         } catch (InterruptedException e) {
