@@ -83,20 +83,23 @@ public class SimulatorOsApplication {
     }
 
     @SuppressWarnings("java:S106")
-    public static void main(String[] args)  {
+    public static void main(String[] args) {
         try {
-
             SimulatorOsApplication app = new SimulatorOsApplication();
             app.startThreads();
             System.out.println("Simulator started.");
-
+    
             // Esperar a que la tarea de apagado complete
             app.executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
-
+    
             System.out.println(management.getTotalRepairTimeAndBadValves());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.err.println("Error en la aplicación: " + e.getMessage());
         } catch (Exception e) {
             System.err.println("Error en la aplicación: " + e.getMessage());
         }
     }
+    
 
 }

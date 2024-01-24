@@ -18,6 +18,9 @@ public class Valve extends Thread {
         rand = new SecureRandom();
         this.valveSemaphore = new Semaphore(0);
     }
+    public Semaphore getValveSemaphore() {
+        return valveSemaphore;
+    }
 
     public Management getManagement() {
         return management;

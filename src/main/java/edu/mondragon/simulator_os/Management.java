@@ -85,7 +85,6 @@ public class Management {
             sendAnomalyMessage(job);
             } else {
                 System.out.println(valve.getValveId() + " is OK ✅. No need for repair.");
-                valve.valveSemaphore.release();
             }
         }
     }
@@ -144,7 +143,7 @@ public class Management {
         long startTime = System.currentTimeMillis();
         Thread.sleep(randomTime);
         long endTime = System.currentTimeMillis();
-        return endTime - startTime;
+        return (double)(endTime - startTime);
 
     }
 

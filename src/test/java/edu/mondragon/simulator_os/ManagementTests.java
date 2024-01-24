@@ -3,6 +3,8 @@ package edu.mondragon.simulator_os;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.concurrent.BlockingQueue;
 
@@ -68,6 +70,46 @@ class ManagementTests {
         valve.setPressure(5);
 
         assertDoesNotThrow(() -> management.writePressure(valve));
+    }
+
+    @Test
+    void testWritePressureAnomalyDetected() throws InterruptedException {
+        // Mocks
+        Valve mockValve = mock(Valve.class);
+        when(mockValve.getValveId()).thenReturn(1);
+        when(mockValve.getPressure()).thenReturn(15);
+
+        // Configuración de Management
+        Management management = new Management();
+        management.setOperatorExists(false);
+
+        // Ejecución del método
+        management.writePressure(mockValve);
+
+        // Verificación de resultados
+        assertEquals(1, management.getBadValve());
+        assertFalse(management.getTotalRepairTime() > 0);
+        // Puedes agregar más aserciones según tus necesidades
+    }
+
+    @Test
+    void testWritePressureOperatorExists() throws InterruptedException {
+        // Mocks
+        Valve mockValve = mock(Valve.class);
+        when(mockValve.getValveId()).thenReturn(1);
+        when(mockValve.getPressure()).thenReturn(15);
+
+        // Configuración de Management
+        Management management = new Management();
+        management.setOperatorExists(true);
+
+        // Ejecución del método
+        management.writePressure(mockValve);
+
+        // Verificación de resultados
+        assertEquals(0, management.getBadValve());
+        assertEquals(0, management.getTotalRepairTime());
+        // Puedes agregar más aserciones según tus necesidades
     }
 
     @Test
