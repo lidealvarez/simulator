@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 public class SimulatorOsApplication {
     static final int NUMVALVES = 15;
     static final int NUMWORKERS = 3;
-    static final boolean OPERATOR_EXISTS  = true;
+    static final boolean OPERATOR_EXISTS  = false;
 
     public static boolean isOperatorExists() {
         return OPERATOR_EXISTS;
@@ -48,7 +48,7 @@ public class SimulatorOsApplication {
             worker.start();
         }
         executorService = Executors.newSingleThreadScheduledExecutor();
-        executorService.schedule(this::waitEndOfThreads, 20, TimeUnit.SECONDS);
+        executorService.schedule(this::waitEndOfThreads, 90, TimeUnit.SECONDS);
     }
 
     @SuppressWarnings("java:S106")

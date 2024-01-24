@@ -85,6 +85,7 @@ public class Management {
             sendAnomalyMessage(job);
             } else {
                 System.out.println(valve.getValveId() + " is OK ✅. No need for repair.");
+                valve.valveSemaphore.release();
             }
         }
     }
@@ -95,7 +96,7 @@ public class Management {
         Valve normalValve =  job.getValve();
 
         System.out.println("\t\t\tOperario beidatezen " + normalValve.getValveId());
-        int randomTime1 = random.nextInt(1000) + 500;
+        int randomTime1 = random.nextInt(22500) + 500;
         double beiratzenDenbora= denbora(randomTime1);
         totalRepairTime += beiratzenDenbora;
         System.out.println("\t\t\tReviewing time(operator):" + beiratzenDenbora);
@@ -105,8 +106,9 @@ public class Management {
             mutexBadValves.lock();
             badValve++;
             mutexBadValves.unlock();
+            int randomTime2 = random.nextInt(500) + 10;
 
-            double gaizkiDenbora= denbora(randomTime1);
+            double gaizkiDenbora= denbora(randomTime2);
             totalRepairTime += gaizkiDenbora;
             System.out.println("\t\t\tWarning time(operator): " + gaizkiDenbora);
 
@@ -125,7 +127,7 @@ public class Management {
         Valve anomalyValve = job.getValve();
         System.out.println("\t\t\t\t\t\t\t Worker " + worker.getWorkerId() + " fixing valve " + anomalyValve.getValveId());
 
-        int randomTime = random.nextInt(1000) + 500;
+        int randomTime = random.nextInt(2000) + 500;
         anomalyValve.setPressure(random.nextInt(1, 10));
         double elapsedTime= denbora(randomTime);
 
