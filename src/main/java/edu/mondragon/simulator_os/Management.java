@@ -70,7 +70,7 @@ public class Management {
     }
 
     @SuppressWarnings("java:S106")
-    public void writePressure(Valve valve) throws InterruptedException {
+    public void writePressure(Valve valve) {
         System.out.println("Valve " + valve.getValveId() + "| pressure ->" + valve.getPressure());
         Job job = new Job(valve);
         if(operatorExists){
@@ -89,6 +89,8 @@ public class Management {
             }
         }
     }
+
+    @SuppressWarnings("java:S106")
     public void findAnomalies() throws InterruptedException{
         Job job = receiveNormalMessage();
         Valve normalValve =  job.getValve();
@@ -109,7 +111,6 @@ public class Management {
             totalRepairTime += gaizkiDenbora;
             System.out.println("\t\t\tWarning time(operator): " + gaizkiDenbora);
 
-
             // Envía la válvula con problema gordo a fixValve
             sendAnomalyMessage(job);
         }
@@ -119,23 +120,16 @@ public class Management {
         }
     }
 
+    @SuppressWarnings("java:S106")
     public void fixValve(Worker worker) throws InterruptedException {
         Job job = receiveAnomalyMessage();
         Valve anomalyValve = job.getValve();
         System.out.println("\t\t\t\t\t\t\t Worker " + worker.getWorkerId() + " fixing valve " + anomalyValve.getValveId());
 
-        // long startTime = System.currentTimeMillis();
         int randomTime = random.nextInt(1000) + 500;
         anomalyValve.setPressure(random.nextInt(1, 10));
         double elapsedTime= denbora(randomTime);
 
-        // Thread.sleep(randomTime);
-        // long endTime = System.currentTimeMillis();
-        // long elapsedTime = endTime - startTime;
-
-        // job sortu y es el que tiene el semaforo entre la valvula y worker , cuando
-        // una valvula se rompe genera job y lo pone a esperar en ese trabajo, cunado
-        // worker arregle hace release
         mutexWorker.lock();
         totalRepairTime += elapsedTime;
         mutexWorker.unlock();
@@ -150,8 +144,7 @@ public class Management {
         long startTime = System.currentTimeMillis();
         Thread.sleep(randomTime);
         long endTime = System.currentTimeMillis();
-        long elapsedTime = endTime - startTime;
-        return elapsedTime;
+        return endTime - startTime;
 
     }
 

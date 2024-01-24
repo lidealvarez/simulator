@@ -20,9 +20,6 @@ class ValveTests {
         // Iniciamos el hilo de la válvula
         valve.start();
 
-        // Esperamos un tiempo para permitir que el hilo de la válvula ejecute writePressure
-        Thread.sleep(2000);
-
         // Interrumpimos el hilo de la válvula para que termine la ejecución
         valve.interrupt();
         valve.join(); // Esperamos a que el hilo de la válvula termine
@@ -38,9 +35,6 @@ class ValveTests {
 
         // Iniciamos el hilo de la válvula
         valve.start();
-
-        // Esperamos un tiempo para permitir que el hilo de la válvula ejecute writePressure
-        Thread.sleep(2000);
 
         // Interrumpimos el hilo de la válvula para que termine la ejecución
         valve.interrupt();
@@ -62,10 +56,7 @@ class ValveTests {
 
         valve.start(); // Iniciamos el hilo de la válvula
 
-        // Esperamos a que el hilo de la válvula adquiera el semáforo
-        Thread.sleep(1000);
-
-        assertTrue(valve.valveSemaphore.availablePermits() == 0);
+        assertEquals(0, valve.valveSemaphore.availablePermits());
 
         // Interrumpimos el hilo de la válvula para que termine la ejecución
         valve.interrupt();
@@ -79,9 +70,6 @@ class ValveTests {
 
         valve.start(); // Iniciamos el hilo de la válvula
 
-        // Esperamos a que el hilo de la válvula adquiera el semáforo
-        Thread.sleep(1000);
-
         assertTrue(valve.isAlive());
 
         // Interrumpimos el hilo de la válvula
@@ -92,7 +80,5 @@ class ValveTests {
 
         assertFalse(valve.isAlive());
     }
-
-    // Puedes agregar más pruebas según sea necesario
 
 }

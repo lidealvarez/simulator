@@ -82,10 +82,6 @@ class ManagementTests {
 
         assertDoesNotThrow(() -> management.findAnomalies());
 
-        // Espera un tiempo suficiente para que se procese el trabajo (puedes ajustar
-        // este tiempo según tus necesidades)
-        Thread.sleep(100);
-
         BlockingQueue<Job> anomalyValvesQueue = getField(management, "anomalyValvesQueue");
         assertFalse(anomalyValvesQueue.isEmpty());
     }

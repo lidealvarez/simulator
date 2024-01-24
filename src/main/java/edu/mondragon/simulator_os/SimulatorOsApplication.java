@@ -7,10 +7,10 @@ import java.util.concurrent.TimeUnit;
 public class SimulatorOsApplication {
     static final int NUMVALVES = 15;
     static final int NUMWORKERS = 3;
-    static final boolean operatorExists = true;
+    static final boolean OPERATOR_EXISTS  = true;
 
     public static boolean isOperatorExists() {
-        return operatorExists;
+        return OPERATOR_EXISTS;
     }
 
     protected Operator operator;
@@ -24,7 +24,7 @@ public class SimulatorOsApplication {
     }
 
     public SimulatorOsApplication() {
-        if (operatorExists) {
+        if (OPERATOR_EXISTS) {
             operator = new Operator(management);
         }
         workers = new Worker[NUMWORKERS];
@@ -38,7 +38,7 @@ public class SimulatorOsApplication {
     }
 
     public void startThreads() {
-        if (operatorExists) {
+        if (OPERATOR_EXISTS) {
             operator.start();
         }
         for (Valve valve : valves) {
@@ -59,7 +59,7 @@ public class SimulatorOsApplication {
         for (Worker worker : workers) {
             worker.interrupt();
         }
-        if (operatorExists) {
+        if (OPERATOR_EXISTS) {
             operator.interrupt();
         }
         try {
@@ -70,7 +70,7 @@ public class SimulatorOsApplication {
                 worker.join();
             }
 
-            if (operatorExists) {
+            if (OPERATOR_EXISTS) {
                 operator.join();
             }
         } catch (InterruptedException e) {
@@ -82,7 +82,8 @@ public class SimulatorOsApplication {
         executorService.shutdown();
     }
 
-    public static void main(String[] args) {
+    @SuppressWarnings("java:S106")
+    public static void main(String[] args)  {
         try {
 
             SimulatorOsApplication app = new SimulatorOsApplication();
